@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EduBox | جعبه‌ابزار دانش‌آموزی</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F2F5FA;--ink:#17254A;--muted:#5F6C8A;--line:#D5DCEA;--mark:#FFC93C;--ok:#1E9E8F;--bad:#D64545;--r:14px}
+*{box-sizing:border-box;margin:0}
+body{font-family:Vazirmatn,Tahoma,sans-serif;color:var(--ink);background:var(--paper) linear-gradient(var(--line) 1px,transparent 1px) 0 0/28px 28px;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);line-height:1.8;min-height:100vh}
+button,input,select{font:inherit;color:inherit}button{cursor:pointer}
+:focus-visible{outline:3px solid var(--mark);outline-offset:2px}
+.hide{display:none!important}
+header.top{background:var(--ink);color:#fff;display:flex;align-items:center;gap:1rem;padding:.5rem clamp(1rem,3vw,2rem);position:sticky;top:0;z-index:5;overflow-x:auto}
+.logo{font-weight:800;font-size:1.4rem;white-space:nowrap}.logo span{background:var(--mark);color:var(--ink);padding:0 .3em;border-radius:6px}
+nav{display:flex;gap:.2rem}
+nav button{background:none;border:0;color:#cfd6ea;padding:.4em .9em;border-radius:10px;white-space:nowrap}
+nav button.on,nav button:hover{background:rgba(255,255,255,.14);color:#fff}
+main{max-width:980px;margin:0 auto;padding:1.5rem clamp(1rem,3vw,2rem) 3rem}
+h1{font-size:1.5rem;margin-bottom:1rem}h2{font-size:1.1rem;margin-bottom:.6rem}
+.card{background:#fff;border:1.5px solid var(--line);border-radius:var(--r);padding:1.1rem;margin-bottom:1rem}
+.btn{background:var(--ink);color:#fff;border:0;border-radius:10px;padding:.5em 1.2em;font-weight:600}
+.btn.alt{background:#fff;color:var(--ink);border:1.5px solid var(--ink)}.btn.sm{padding:.1em .7em;font-size:.88rem}.btn.bad{background:var(--bad)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+input,select{width:100%;padding:.5em .7em;border:1.5px solid var(--line);border-radius:10px;background:#fff}
+label{display:block;font-size:.9rem;color:var(--muted);margin:.6rem 0 .2rem}
+.g{display:grid;gap:.8rem;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem}
+.chip{border:1.5px solid var(--ink);background:#fff;border-radius:99px;padding:.15em .9em}
+.chip.on{background:var(--mark)}
+.note{font-size:.85rem;color:var(--muted);margin-top:.5rem}
+table{width:100%;border-collapse:collapse;font-size:.93rem}
+th,td{text-align:right;padding:.45rem .4rem;border-bottom:1px solid var(--line)}th{color:var(--muted);font-weight:600}
+.big{font-size:2rem;font-weight:800;line-height:1.4}.neg{color:var(--bad)}
+svg{width:100%;height:auto;display:block}
+.legend{display:flex;flex-wrap:wrap;gap:.8rem;font-size:.85rem;margin-top:.4rem}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-left:.3rem;vertical-align:middle}
+/* countdown */
+.cd{display:flex;gap:.6rem;margin:.6rem 0}
+.cd div{background:var(--ink);color:#fff;border-radius:12px;padding:.4rem .9rem;text-align:center;min-width:72px}
+.cd b{display:block;font-size:1.8rem;line-height:1.3}.cd small{opacity:.7}
+.tl{position:relative;padding-right:1.4rem;list-style:none}
+.tl:before{content:"";position:absolute;right:6px;top:.5rem;bottom:.5rem;width:2px;background:var(--line)}
+.tl li{position:relative;padding:.4rem 0}
+.tl li:before{content:"";position:absolute;right:-1.4rem;top:.9rem;width:12px;height:12px;border-radius:50%;background:#fff;border:2px solid var(--ink)}
+.tl li.first:before{background:var(--mark)}
+.tl small{color:var(--muted);display:block}
+/* tools home */
+.tool{text-align:right;background:#fff;border:1.5px solid var(--line);border-radius:var(--r);padding:1rem;display:block;width:100%}
+.tool:hover:not(.soon){border-color:var(--ink)}
+.tool b{display:block}.tool span{font-size:.85rem;color:var(--muted)}
+.tool.soon{opacity:.55;cursor:default}
+.res{font-size:1.5rem;font-weight:800;margin-top:.8rem}
+.pill{padding:.1em .7em;border-radius:99px;font-size:.82rem;background:#FFF1BF;font-weight:400}
+.msg{margin-top:.8rem;padding:.6rem .8rem;background:#FFF6D6;border-radius:10px;font-size:.92rem}
+@media(max-width:560px){.cd div{min-width:58px;padding:.3rem .5rem}.cd b{font-size:1.4rem}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="logo">Edu<span>Box</span></div>
+  <nav id="nav">
+    <button data-p="home" class="on">خانه</button>
+    <button data-p="pct">درصدگیر</button>
+    <button data-p="unit">تبدیل واحد</button>
+    <button data-p="sci">علوم</button>
+    <button data-p="math">ریاضی</button>
+    <button data-p="exam">امتحان‌های پیش رو</button>
+    <button data-p="acct" id="navAcct" style="margin-right:auto">ورود / ثبت‌نام</button>
+  </nav>
+</header>
+<main>
+
+<section id="home" class="pane">
+  <div class="card"><h2>امتحان بعدی کلاس شما</h2>
+    <label for="hc">کلاس</label><select id="hc"></select>
+    <div id="hcd"></div></div>
+  <h1>ابزارها</h1>
+  <div class="g" id="tools"></div>
+</section>
+
+<section id="pct" class="pane hide">
+  <h1>درصدگیر</h1>
+  <div class="card">
+    <div class="g">
+      <div><label for="pc">کلاس</label><select id="pc"></select></div>
+      <div><label for="pn">نام آزمون</label><input id="pn" placeholder="مثلاً آزمون ماهانه آبان"></div>
+    </div>
+    <label>حالت</label>
+    <div class="chips" id="modes"><button class="chip on" data-m="1">تک‌درس</button><button class="chip" data-m="2">چند درس</button></div>
+    <label>درس‌ها</label><div class="chips" id="subs"></div>
+    <label style="display:flex;gap:.5rem;align-items:center"><input type="checkbox" id="neg" checked style="width:auto"> نمره منفی (هر غلط، یک‌سوم یک صحیح)</label>
+    <div id="rows"></div>
+    <div id="out"></div>
+    <div style="display:flex;gap:.5rem;margin-top:1rem"><button class="btn" id="calc">محاسبه</button><button class="btn alt" id="save" disabled>ذخیره در تاریخچه</button></div>
+  </div>
+  <div class="card"><h2>نمودار پیشرفت</h2><div id="chart"></div><div class="legend" id="legend"></div></div>
+  <div class="card"><h2>تاریخچه</h2><table><thead><tr><th>آزمون</th><th>تاریخ</th><th>درصد کل</th><th></th></tr></thead><tbody id="hist"></tbody></table>
+    <p class="note">تاریخچه روی حساب شما ذخیره می‌شود.</p></div>
+</section>
+
+<section id="unit" class="pane hide">
+  <h1>تبدیل واحد</h1>
+  <div class="card">
+    <label for="uq">کمیت</label><select id="uq"></select>
+    <div class="g">
+      <div><label for="ua">مقدار</label><input id="ua" type="number" value="1" step="any"></div>
+      <div><label for="uf">از</label><select id="uf"></select></div>
+      <div><label for="ut">به</label><select id="ut"></select></div>
+    </div>
+    <div class="res" id="ur"></div>
+    <p class="note" id="un"></p>
+  </div>
+</section>
+
+<section id="sci" class="pane hide">
+  <h1>علوم</h1>
+  <div class="card"><h2>جرم مولی</h2>
+    <label for="mf">فرمول شیمیایی (با حروف لاتین، مثلاً H2SO4 یا Ca(OH)2)</label>
+    <input id="mf" value="Ca(OH)2" dir="ltr" style="text-align:left">
+    <div class="res" id="mr"></div><div id="mb" class="note"></div></div>
+  <div class="card"><p class="note">در نسخه کامل: جدول تناوبی تعاملی و موازنه معادله شیمیایی.</p></div>
+</section>
+
+<section id="acct" class="pane hide">
+  <h1>حساب کاربری</h1>
+  <div class="card" style="max-width:460px">
+    <div class="chips" id="atabs"><button class="chip on" data-t="l">ورود</button><button class="chip" data-t="r">ثبت‌نام</button></div>
+    <form id="fl">
+      <label for="lu">نام کاربری</label><input id="lu" autocomplete="username">
+      <label for="lp">رمز عبور</label><input id="lp" type="password" autocomplete="current-password">
+      <button class="btn" style="margin-top:.8rem">ورود</button>
+    </form>
+    <form id="fr" class="hide">
+      <label for="rn">نام و نام خانوادگی</label><input id="rn">
+      <label for="rc">کلاس</label><select id="rc"></select>
+      <label for="ru">نام کاربری</label><input id="ru" autocomplete="username">
+      <label for="rp">رمز عبور</label><input id="rp" type="password" autocomplete="new-password">
+      <button class="btn" style="margin-top:.8rem">ارسال درخواست ثبت‌نام</button>
+    </form>
+    <div class="msg hide" id="amsg"></div>
+  </div>
+</section>
+
+<section id="me" class="pane hide">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem"><h1 id="mh"></h1><button class="btn alt sm" id="mout">خروج</button></div>
+  <div class="g">
+    <div class="card"><div class="note">آزمون ثبت‌شده</div><div class="big" id="m1"></div></div>
+    <div class="card"><div class="note">آخرین درصد کل</div><div class="big" id="m2"></div></div>
+    <div class="card"><div class="note">بهترین درصد کل</div><div class="big" id="m3"></div></div>
+  </div>
+  <div class="card"><h2>امتحان بعدی کلاس شما</h2><div id="mcd"></div></div>
+  <div class="card"><p class="note">درصدگیر و نمودار پیشرفتی که وارد حساب خودتان شده‌اید، روی همین حساب ذخیره می‌شود.</p></div>
+</section>
+
+<section id="math" class="pane hide">
+  <h1>ریاضی</h1>
+  <div class="card"><h2>جدول مثلثاتی زاویه‌های مهم</h2>
+    <div style="overflow-x:auto"><table><thead><tr><th>درجه</th><th>رادیان</th><th>sin</th><th>cos</th><th>tan</th><th>cot</th></tr></thead><tbody id="trig"></tbody></table></div>
+    <p class="note">مقدارها دقیق و به‌صورت رادیکالی هستند. جاهایی که تعریف‌نشده نوشته شده، مخرج کسر صفر می‌شود.</p></div>
+</section>
+
+<section id="exam" class="pane hide">
+  <h1>امتحان‌های پیش رو</h1>
+  <div class="card"><label for="ec">کلاس</label><select id="ec"></select><div id="ecd"></div></div>
+</section>
+
+<section id="admin" class="pane hide">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:1rem"><h1>پنل مدیر</h1><button class="btn alt sm" id="aout">خروج</button></div>
+  <div class="g" id="astat"></div>
+  <p class="note" id="acls" style="margin:.5rem 0 1rem"></p>
+  <div class="card"><h2>درخواست‌های ثبت‌نام</h2><table><tbody id="pend"></tbody></table>
+    <p class="note">مدیر فقط آمار تجمیعی را می‌بیند، نه نتایج شخصی دانش‌آموزان.</p></div>
+  <div class="card" id="apanel"><h2>ثبت برنامه امتحانی</h2>
+    <div class="g">
+      <div><label for="ac">کلاس</label><select id="ac"></select></div>
+      <div><label for="as">درس</label><select id="as"></select></div>
+      <div><label for="at">تاریخ و ساعت</label><input id="at" type="datetime-local"></div>
+    </div>
+    <button class="btn" id="aadd" style="margin-top:.8rem">افزودن امتحان</button>
+    <p class="note">برنامه‌ای که ثبت می‌کنید برای همه دانش‌آموزان نمایش داده می‌شود.</p>
+    <table style="margin-top:.8rem"><tbody id="alist"></tbody></table></div>
+</section>
+</main>
+
+<script type="module">
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const fa=(n,d=1)=>Number(n).toLocaleString('fa-IR',{maximumFractionDigits:d});
+const CL={'تجربی':['شیمی','زیست','فیزیک','ریاضی'],'ریاضی ۱':['هندسه','فیزیک','ریاضی','شیمی'],'ریاضی ۲':['هندسه','فیزیک','ریاضی','شیمی']};
+const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const opts=(el,arr)=>el.innerHTML=arr.map(a=>`<option>${a}</option>`).join('');
+['hc','pc','ec','ac'].forEach(i=>opts($('#'+i),Object.keys(CL)));
+
+/* ناوبری */
+function go(p){$$('.pane').forEach(x=>x.classList.toggle('hide',x.id!==p));$$('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.p===p));scrollTo(0,0)}
+$$('#nav button').forEach(b=>b.onclick=()=>go(b.dataset.p));
+const T=[['pct','درصدگیر','تک‌درس و چنددرس، با نمودار پیشرفت'],['unit','تبدیل واحد','طول، جرم، دما، فشار، واحدهای قدیمی و بیشتر'],['sci','علوم','جرم مولی (جدول تناوبی به‌زودی)'],['math','ریاضی','جدول سینوس، کسینوس، تانژانت و کتانژانت'],['exam','امتحان‌های پیش رو','شمارش معکوس و تایم‌لاین'],['','فشرده‌سازی PDF','به‌زودی'],['','کم‌حجم کردن عکس','به‌زودی'],['','تاریخ شمسی و میلادی','به‌زودی']];
+$('#tools').innerHTML=T.map(t=>`<button class="tool ${t[0]?'':'soon'}" data-p="${t[0]}"><b>${t[1]}</b><span>${t[2]}</span></button>`).join('');
+$$('.tool').forEach(b=>b.onclick=()=>b.dataset.p&&go(b.dataset.p));
+
+/* ===== امتحان‌ها ===== */
+let ex=[];
+const fmtD=t=>new Date(t).toLocaleString('fa-IR',{weekday:'long',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
+function nextList(c){return ex.filter(e=>e.c===c&&e.t>Date.now()).sort((a,b)=>a.t-b.t)}
+function cdHTML(c,full){
+  const l=nextList(c);if(!l.length)return '<p class="note">امتحان ثبت‌شده‌ای در پیش نیست.</p>';
+  let d=l[0].t-Date.now();const P=[[864e5,'روز'],[36e5,'ساعت'],[6e4,'دقیقه'],[1e3,'ثانیه']];
+  const boxes=P.map(([u,n])=>{const v=Math.floor(d/u);d-=v*u;return `<div><b>${fa(v,0)}</b><small>${n}</small></div>`}).join('');
+  let h=`<p style="font-weight:600">${l[0].s} <span class="note">— ${fmtD(l[0].t)}</span></p><div class="cd">${boxes}</div>`;
+  if(full)h+=`<ul class="tl">${l.map((e,i)=>`<li class="${i?'':'first'}"><b>${e.s}</b><small>${fmtD(e.t)}</small></li>`).join('')}</ul>`;
+  return h;
+}
+function tick(){$('#hcd').innerHTML=cdHTML($('#hc').value,false);$('#ecd').innerHTML=cdHTML($('#ec').value,true);const m=$('#mcd');if(m&&m.dataset.c)m.innerHTML=cdHTML(m.dataset.c,false)}
+$('#hc').value=$('#ec').value=store.get('eb_class','تجربی');
+[$('#hc'),$('#ec')].forEach(s=>s.onchange=()=>{store.set('eb_class',s.value);$('#hc').value=$('#ec').value=s.value;tick()});
+setInterval(tick,1000);tick();
+/* پنل مدیر (نمایشی) */
+const fillAS=()=>opts($('#as'),CL[$('#ac').value]);$('#ac').onchange=fillAS;fillAS();
+
+/* ===== درصدگیر ===== */
+let mode=1,sel=new Set(),cur=null,hist=[];
+function subs(){const l=CL[$('#pc').value];if(![...sel].every(s=>l.includes(s)))sel=new Set();if(!sel.size)sel.add(l[0]);
+  $('#subs').innerHTML=l.map(s=>`<button class="chip ${sel.has(s)?'on':''}" data-s="${s}">${s}</button>`).join('');
+  $$('#subs .chip').forEach(b=>b.onclick=()=>{const s=b.dataset.s;if(mode==1)sel=new Set([s]);else sel.has(s)?sel.size>1&&sel.delete(s):sel.add(s);subs();rows()})}
+function rows(){$('#rows').innerHTML=[...sel].map((s,i)=>`<div class="g" style="grid-template-columns:90px repeat(4,1fr);align-items:end" data-s="${s}"><b style="padding-bottom:.4rem">${s}</b><div><label>سوال</label><input type="number" min="0" class="t" value="20"></div><div><label>صحیح</label><input type="number" min="0" class="c" value="12"></div><div><label>غلط</label><input type="number" min="0" class="w" value="4"></div><div><label>ضریب</label><input type="number" min="1" class="k" value="${s==='ریاضی'?3:2}"></div></div>`).join('');$('#out').innerHTML='';$('#save').disabled=true}
+$$('#modes .chip').forEach(b=>b.onclick=()=>{mode=+b.dataset.m;$$('#modes .chip').forEach(x=>x.classList.toggle('on',x===b));if(mode==1)sel=new Set([[...sel][0]]);subs();rows()});
+$('#pc').onchange=()=>{subs();rows()};subs();rows();
+$('#calc').onclick=()=>{
+  const neg=$('#neg').checked,r=[];let bad=false;
+  $$('#rows [data-s]').forEach(d=>{const t=+d.querySelector('.t').value,c=+d.querySelector('.c').value,w=+d.querySelector('.w').value,k=+d.querySelector('.k').value||1;
+    if(!t||c<0||w<0||c+w>t){bad=true;return}
+    r.push({s:d.dataset.s,p:neg?(c*3-w)/(t*3)*100:c/t*100,k,n:t-c-w})});
+  if(bad){$('#out').innerHTML='<p class="neg">تعداد صحیح و غلط نباید از تعداد سوال بیشتر باشد.</p>';$('#save').disabled=true;return}
+  const K=r.reduce((a,x)=>a+x.k,0),all=r.reduce((a,x)=>a+x.p*x.k,0)/K;cur={subs:r.map(x=>({s:x.s,p:x.p})),overall:all};
+  $('#out').innerHTML=`<table style="margin-top:1rem"><thead><tr><th>درس</th><th>نزده</th><th>درصد</th></tr></thead><tbody>${r.map(x=>`<tr><td>${x.s}</td><td>${fa(x.n,0)}</td><td class="${x.p<0?'neg':''}">${fa(x.p)}٪</td></tr>`).join('')}</tbody></table>${r.length>1?`<div class="big ${all<0?'neg':''}">درصد کل: ${fa(all)}٪</div><p class="note">میانگین وزنی با ضریب درس‌ها</p>`:''}`;
+  $('#save').disabled=false};
+$('#save').onclick=()=>saveRes();
+const COL=['#17254A','#1E9E8F','#D64545','#E58A00','#7A4FD1'];
+function drawH(){
+  $('#hist').innerHTML=hist.length?[...hist].map((h,i)=>[h,i]).reverse().map(([h,i])=>`<tr><td>${h.n}</td><td>${new Date(h.d).toLocaleDateString('fa-IR')}</td><td>${fa(h.overall)}٪</td><td style="text-align:left"><button class="btn bad sm" data-i="${i}">حذف</button></td></tr>`).join(''):'<tr><td colspan="4" class="note">هنوز آزمونی ذخیره نشده.</td></tr>';
+  $$('#hist button').forEach(b=>b.onclick=()=>{delRes(+b.dataset.i)});
+  const names=['درصد کل',...new Set(hist.flatMap(h=>h.subs.map(s=>s.s)))];
+  if(hist.length<1){$('#chart').innerHTML='<p class="note">بعد از ذخیره اولین آزمون، نمودار اینجا ظاهر می‌شود.</p>';$('#legend').innerHTML='';return}
+  const W=640,H=230,m=34,all=hist.flatMap(h=>[h.overall,...h.subs.map(s=>s.p)]),lo=Math.min(0,...all),hi=100;
+  const x=i=>hist.length==1?W/2:m+i*(W-2*m)/(hist.length-1),y=p=>H-m-(p-lo)/(hi-lo)*(H-2*m);
+  const val=(h,n)=>n==='درصد کل'?h.overall:(h.subs.find(s=>s.s===n)||{}).p;
+  let g=[0,50,100].map(v=>`<line x1="${m}" x2="${W-m}" y1="${y(v)}" y2="${y(v)}" stroke="#D5DCEA"/><text x="${m-6}" y="${y(v)+4}" font-size="11" text-anchor="end" fill="#5F6C8A">${fa(v,0)}</text>`).join('');
+  names.forEach((n,k)=>{const pts=hist.map((h,i)=>[i,val(h,n)]).filter(p=>p[1]!=null),c=COL[k%5];
+    g+=`<polyline fill="none" stroke="${c}" stroke-width="${k?2:3.5}" stroke-linejoin="round" ${k?'stroke-dasharray="5 4"':''} points="${pts.map(p=>x(p[0])+','+y(p[1])).join(' ')}"/>`+pts.map(p=>`<circle cx="${x(p[0])}" cy="${y(p[1])}" r="4" fill="${c}"/>`).join('')});
+  $('#chart').innerHTML=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="نمودار پیشرفت">${g}</svg>`;
+  $('#legend').innerHTML=names.map((n,k)=>`<span><i style="background:${COL[k%5]}"></i>${n}</span>`).join('');
+}
+drawH();
+
+/* ===== تبدیل واحد ===== */
+const U={
+'طول':{'متر':1,'کیلومتر':1e3,'سانتی‌متر':.01,'میلی‌متر':.001,'مایل':1609.344,'فوت':.3048,'اینچ':.0254,'ذرع (قدیمی)':1.04,'فرسنگ (قدیمی)':6e3},
+'جرم':{'کیلوگرم':1,'گرم':.001,'میلی‌گرم':1e-6,'تن':1e3,'پوند':.45359237,'اونس':.028349523,'مثقال (قدیمی)':.004608,'سیر (قدیمی)':.075},
+'مساحت':{'متر مربع':1,'کیلومتر مربع':1e6,'هکتار':1e4,'سانتی‌متر مربع':1e-4,'فوت مربع':.09290304,'جریب (قدیمی، تقریبی)':1e3},
+'حجم':{'لیتر':1,'میلی‌لیتر':.001,'متر مکعب':1e3,'سانتی‌متر مکعب':.001,'گالن آمریکا':3.785411784},
+'دما':null,
+'زمان':{'ثانیه':1,'دقیقه':60,'ساعت':3600,'روز':86400,'هفته':604800},
+'سرعت':{'متر بر ثانیه':1,'کیلومتر بر ساعت':1/3.6,'مایل بر ساعت':.44704,'گره دریایی':.514444},
+'نیرو':{'نیوتن':1,'کیلونیوتن':1e3,'کیلوگرم‌نیرو':9.80665},
+'فشار':{'پاسکال':1,'کیلوپاسکال':1e3,'اتمسفر':101325,'بار':1e5,'میلی‌متر جیوه':133.322},
+'انرژی':{'ژول':1,'کیلوژول':1e3,'کالری':4.184,'کیلوکالری':4184,'کیلووات‌ساعت':3.6e6},
+'توان':{'وات':1,'کیلووات':1e3,'اسب‌بخار':745.7},
+'حجم داده':{'بایت':1,'بیت':.125,'کیلوبایت':1024,'مگابایت':1048576,'گیگابایت':1073741824,'ترابایت':1099511627776},
+'زاویه':{'درجه':Math.PI/180,'رادیان':1,'گراد':Math.PI/200}};
+const TK={'سانتی‌گراد':[v=>v,v=>v],'فارنهایت':[v=>(v-32)*5/9,v=>v*9/5+32],'کلوین':[v=>v-273.15,v=>v+273.15]};
+opts($('#uq'),Object.keys(U));
+function uFill(){const q=$('#uq').value,k=q==='دما'?Object.keys(TK):Object.keys(U[q]);opts($('#uf'),k);opts($('#ut'),k);$('#ut').selectedIndex=Math.min(1,k.length-1);uCalc()}
+function uCalc(){const q=$('#uq').value,v=parseFloat($('#ua').value),f=$('#uf').value,t=$('#ut').value;
+  if(isNaN(v)){$('#ur').textContent='';return}
+  const r=q==='دما'?TK[t][1](TK[f][0](v)):v*U[q][f]/U[q][t];
+  $('#ur').textContent=`${fa(v,6)} ${f} = ${fa(r,6)} ${t}`;
+  $('#un').textContent=/قدیمی/.test(f+t)?'مقدار واحدهای قدیمی بسته به منطقه کمی فرق می‌کند.':''}
+$('#uq').onchange=uFill;['ua','uf','ut'].forEach(i=>$('#'+i).oninput=uCalc);uFill();
+
+/* ===== جرم مولی ===== */
+const E={H:1.008,He:4.003,Li:6.94,Be:9.012,B:10.81,C:12.011,N:14.007,O:15.999,F:18.998,Ne:20.18,Na:22.99,Mg:24.305,Al:26.982,Si:28.085,P:30.974,S:32.06,Cl:35.45,Ar:39.948,K:39.098,Ca:40.078,Cr:51.996,Mn:54.938,Fe:55.845,Ni:58.693,Cu:63.546,Zn:65.38,Br:79.904,Ag:107.87,Sn:118.71,I:126.9,Ba:137.33,Au:196.97,Hg:200.59,Pb:207.2};
+function mm(f){const st=[{}],re=/([A-Z][a-z]?)(\d*)|(\()|\)(\d*)/g;let m;
+  while(m=re.exec(f)){const top=st[st.length-1];
+    if(m[1]){if(!(m[1] in E))throw'عنصر «'+m[1]+'» در جدول دمو نیست.';top[m[1]]=(top[m[1]]||0)+(+m[2]||1)}
+    else if(m[3])st.push({});
+    else{if(st.length<2)throw'پرانتز بسته اضافه است.';const o=st.pop(),k=+m[4]||1,p=st[st.length-1];for(const e in o)p[e]=(p[e]||0)+o[e]*k}}
+  if(st.length!==1)throw'پرانتز باز بسته نشده.';return st[0]}
+function mCalc(){const f=$('#mf').value.trim();
+  try{if(!f||!/^[A-Za-z0-9()]+$/.test(f))throw'فرمول را با حروف و اعداد لاتین وارد کنید.';
+    const c=mm(f),M=Object.entries(c).reduce((a,[e,n])=>a+E[e]*n,0);
+    $('#mr').textContent=fa(M,3)+' g/mol';$('#mr').className='res';
+    $('#mb').textContent=Object.entries(c).map(([e,n])=>`${e}: ${fa(n,0)} × ${fa(E[e],3)}`).join('  |  ')}
+  catch(e){$('#mr').textContent='';$('#mb').textContent=e}}
+$('#mf').oninput=mCalc;mCalc();
+
+/* ===== جدول مثلثاتی ===== */
+const SB={0:'0',30:'1/2',45:'√2/2',60:'√3/2',90:'1'},CB={0:'1',30:'√3/2',45:'√2/2',60:'1/2',90:'0'},
+TB={0:'0',30:'√3/3',45:'1',60:'√3',90:null},KB={0:null,30:'√3',45:'1',60:'√3/3',90:'0'};
+const fd=s=>String(s).replace(/\d/g,d=>'۰۱۲۳۴۵۶۷۸۹'[d]);
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+const tv=(v,s)=>v==null?'تعریف‌نشده':(v==='0'||s>0)?fd(v):'−'+fd(v);
+$('#trig').innerHTML=[0,30,45,60,90,120,135,150,180,210,225,240,270,300,315,330,360].map(t=>{
+  const q=t<=90?1:t<=180?2:t<=270?3:4,r=[t,180-t,t-180,360-t][q-1];
+  const ss=q<3?1:-1,cs=(q==1||q==4)?1:-1,ts=(q==1||q==3)?1:-1;
+  const g=gcd(t,180)||180,p=t/g,d=180/g;
+  const rad=t===0?'۰':fd((p==1?'':p)+'π'+(d==1?'':'/'+d));
+  return `<tr><td>${fa(t,0)}°</td><td><bdi dir="ltr">${rad}</bdi></td><td><bdi dir="ltr">${tv(SB[r],ss)}</bdi></td><td><bdi dir="ltr">${tv(CB[r],cs)}</bdi></td><td><bdi dir="ltr">${tv(TB[r],ts)}</bdi></td><td><bdi dir="ltr">${tv(KB[r],ts)}</bdi></td></tr>`}).join('');
+
+/* ===== اتصال Firebase: Authentication + Firestore ===== */
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-app.js';
+import {
+  getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+  signOut, onAuthStateChanged
+} from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-auth.js';
+import {
+  getFirestore, collection, doc, getDoc, getDocs, addDoc, setDoc, updateDoc,
+  deleteDoc, query, where, serverTimestamp
+} from 'https://www.gstatic.com/firebasejs/12.5.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey: 'AIzaSyBVp9gGZTSiGi8txUKV7q0i8_VdVU67t68',
+  authDomain: 'taha-school-224e4.firebaseapp.com',
+  projectId: 'taha-school-224e4',
+  storageBucket: 'taha-school-224e4.firebasestorage.app',
+  messagingSenderId: '153646669810',
+  appId: '1:153646669810:web:f3c85166695627c6ef956b'
+};
+const fbApp = initializeApp(firebaseConfig);
+const auth = getAuth(fbApp);
+const db = getFirestore(fbApp);
+const STUDENT_EMAIL_DOMAIN = 'taha-school-224e4.firebaseapp.com';
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const netErr=e=>{
+  const c=e?.code||'';
+  if(c.includes('wrong-password')||c.includes('invalid-credential')||c.includes('user-not-found'))return 'نام کاربری یا رمز عبور اشتباه است.';
+  if(c.includes('email-already-in-use'))return 'این نام کاربری قبلاً ثبت شده است.';
+  if(c.includes('weak-password'))return 'رمز عبور باید حداقل ۶ کاراکتر باشد.';
+  if(c.includes('invalid-email'))return 'نام کاربری معتبر نیست.';
+  if(c.includes('permission-denied'))return 'دسترسی Firestore مجاز نیست؛ قوانین امنیتی را بررسی کنید.';
+  if(/Failed to fetch|NetworkError|Load failed/i.test(e?.message||''))return 'اتصال به Firebase برقرار نشد. اینترنت را بررسی کنید.';
+  return e?.message||'خطای ناشناخته رخ داد.';
+};
+function usernameEmail(value){
+  const v=String(value||'').trim().toLowerCase();
+  if(v.includes('@'))return v;
+  if(!/^[a-z0-9._-]{2,40}$/.test(v))throw new Error('نام کاربری باید حداقل ۲ حرف و فقط شامل حروف انگلیسی، عدد، نقطه، خط تیره یا زیرخط باشد.');
+  return `${v}@${STUDENT_EMAIL_DOMAIN}`;
+}
+let sess=null;
+let authBusy=false, skipAuthUid=null;
+
+/* برنامه امتحانی مشترک */
+async function loadExams(){
+  try{
+    const snap=await getDocs(collection(db,'exams'));
+    ex=snap.docs.map(d=>{const v=d.data();return {id:d.id,c:v.class,s:v.subject,t:v.startsAt?.toDate?v.startsAt.toDate().getTime():Date.parse(v.startsAt||'')}}).filter(e=>Number.isFinite(e.t)).sort((a,b)=>a.t-b.t);
+  }catch(e){console.error(e);ex=[];if(sess?.role==='admin')alert(netErr(e));}
+  tick();if(sess?.role==='admin')drawA();
+}
+function drawA(){
+  const l=[...ex].sort((a,b)=>a.t-b.t);
+  $('#alist').innerHTML=l.length?l.map(e=>`<tr><td>${esc(e.c)}</td><td>${esc(e.s)}</td><td>${fmtD(e.t)}</td><td style="text-align:left"><button class="btn bad sm" data-id="${e.id}">حذف</button></td></tr>`).join(''):'<tr><td class="note">امتحانی ثبت نشده.</td></tr>';
+  $$('#alist button').forEach(b=>b.onclick=async()=>{try{await deleteDoc(doc(db,'exams',b.dataset.id));await loadExams()}catch(e){alert(netErr(e))}});
+}
+$('#aadd').onclick=async()=>{
+  const t=new Date($('#at').value);if(isNaN(t))return $('#at').focus();
+  try{await addDoc(collection(db,'exams'),{class:$('#ac').value,subject:$('#as').value,startsAt:t,createdAt:serverTimestamp(),createdBy:sess.uid});$('#at').value='';await loadExams()}
+  catch(e){alert(netErr(e))}
+};
+
+/* تاریخچه نتایج خصوصی هر دانش‌آموز */
+async function loadHist(){
+  if(!sess||sess.role!=='student')return;
+  try{
+    const snap=await getDocs(query(collection(db,'results'),where('uid','==',sess.uid)));
+    hist=snap.docs.map(d=>{const v=d.data();return {id:d.id,n:v.name||'آزمون',d:v.takenAt?.toDate?v.takenAt.toDate().getTime():Date.now(),overall:Number(v.overall)||0,subs:Array.isArray(v.subjects)?v.subjects:[]}}).sort((a,b)=>a.d-b.d);
+  }catch(e){hist=[];alert(netErr(e))}
+  drawH();
+}
+async function saveRes(){
+  if(!sess||sess.role!=='student'||!cur)return alert('ابتدا وارد حساب دانش‌آموز شوید و درصد را محاسبه کنید.');
+  try{await addDoc(collection(db,'results'),{uid:sess.uid,name:$('#pn').value.trim()||'آزمون بدون نام',overall:cur.overall,subjects:cur.subs,takenAt:serverTimestamp()});$('#save').disabled=true;await loadHist()}
+  catch(e){alert(netErr(e))}
+}
+async function delRes(i){
+  try{await deleteDoc(doc(db,'results',hist[i].id));await loadHist()}
+  catch(e){alert(netErr(e))}
+}
+
+/* تشخیص نقش با سند امن admins/{uid} */
+async function activateUser(user){
+  if(!user)return;
+  try{
+    const adminSnap=await getDoc(doc(db,'admins',user.uid));
+    if(adminSnap.exists()&&adminSnap.data().active===true){
+      sess={role:'admin',uid:user.uid,u:user.email||'مدیر'};
+      await enter();return;
+    }
+    const profileSnap=await getDoc(doc(db,'users',user.uid));
+    if(!profileSnap.exists()){
+      authBusy=true;await signOut(auth);authBusy=false;
+      sess=null;gate();amsg('اطلاعات حساب پیدا نشد. دوباره ثبت‌نام کنید یا با مدیر تماس بگیرید.');return;
+    }
+    const p=profileSnap.data();
+    if(p.status==='pending'){
+      authBusy=true;await signOut(auth);authBusy=false;
+      sess=null;gate();amsg('حساب شما هنوز در انتظار تأیید مدیر است.');return;
+    }
+    if(p.status!=='approved'){
+      authBusy=true;await signOut(auth);authBusy=false;
+      sess=null;gate();amsg('درخواست ثبت‌نام شما تأیید نشده است.');return;
+    }
+    sess={role:'student',uid:user.uid,u:p.username,n:p.name,c:p.class};
+    await enter();
+  }catch(e){
+    authBusy=true;try{await signOut(auth)}catch(_){}authBusy=false;
+    sess=null;gate();amsg(netErr(e));
+  }
+}
+onAuthStateChanged(auth,user=>{if(user&&!authBusy&&!sess){if(skipAuthUid===user.uid){skipAuthUid=null;return;}activateUser(user)}});
+
+/* ورود و ثبت‌نام */
+const amsg=t=>{const m=$('#amsg');m.textContent=t;m.classList.toggle('hide',!t)};
+$$('#atabs .chip').forEach(b=>b.onclick=()=>{$$('#atabs .chip').forEach(x=>x.classList.toggle('on',x===b));$('#fl').classList.toggle('hide',b.dataset.t!=='l');$('#fr').classList.toggle('hide',b.dataset.t!=='r');amsg('')});
+$('#fl').onsubmit=async e=>{
+  e.preventDefault();const u=$('#lu').value.trim(),p=$('#lp').value;
+  if(!u||!p)return amsg('نام کاربری و رمز عبور را وارد کنید.');
+  amsg('در حال ورود...');authBusy=true;
+  try{const credential=await signInWithEmailAndPassword(auth,usernameEmail(u),p);skipAuthUid=credential.user.uid;authBusy=false;await activateUser(credential.user);}
+  catch(err){authBusy=false;amsg(netErr(err))}
+};
+$('#fr').onsubmit=async e=>{
+  e.preventDefault();const n=$('#rn').value.trim(),u=$('#ru').value.trim(),p=$('#rp').value;
+  if(!n||!u||!p)return amsg('همه فیلدها را پر کنید.');
+  if(p.length<6)return amsg('رمز عبور باید حداقل ۶ کاراکتر باشد.');
+  let email;try{email=usernameEmail(u)}catch(err){return amsg(err.message)}
+  if(u.includes('@'))return amsg('برای ثبت‌نام، فقط نام کاربری وارد کنید؛ بدون @ و ایمیل.');
+  amsg('در حال ثبت‌نام...');authBusy=true;
+  try{
+    const credential=await createUserWithEmailAndPassword(auth,email,p);
+    await setDoc(doc(db,'users',credential.user.uid),{name:n,class:$('#rc').value,username:u.toLowerCase(),status:'pending',createdAt:serverTimestamp()});
+    await signOut(auth);authBusy=false;e.target.reset();amsg('درخواست ثبت شد. پس از تأیید مدیر می‌توانید با همین نام کاربری وارد شوید.');
+  }catch(err){
+    try{await signOut(auth)}catch(_){}authBusy=false;amsg(netErr(err));
+  }
+};
+
+/* ورود اجباری */
+function gate(){$('#nav').classList.add('hide');go('acct')}
+async function out(){authBusy=true;try{await signOut(auth)}catch(e){}authBusy=false;sess=null;hist=[];ex=[];gate()}
+$('#mout').onclick=out;$('#aout').onclick=out;
+async function enter(){
+  $('#nav').classList.remove('hide');
+  const b=$('#navAcct'),ad=sess.role==='admin';
+  b.dataset.p=ad?'admin':'me';b.textContent=ad?'پنل مدیر':'پنل من';
+  if(!ad){$('#pc').value=$('#hc').value=$('#ec').value=sess.c;store.set('eb_class',sess.c);subs();rows()}
+  go(ad?'admin':'home');
+  if(ad){hist=[];drawH()}
+  await Promise.all([loadExams(),ad?renderAdmin():loadHist()]);
+  renderMe();
+}
+$('#navAcct').addEventListener('click',()=>{if(sess)sess.role==='admin'?renderAdmin():renderMe()});
+
+/* پنل دانش‌آموز */
+function renderMe(){if(!sess||sess.role!=='student')return;
+  $('#mh').innerHTML=`سلام، ${esc(sess.n)} <span class="pill">${esc(sess.c)}</span>`;
+  const l=hist.length;
+  $('#m1').textContent=fa(l,0);
+  $('#m2').textContent=l?fa(hist[l-1].overall)+'٪':'—';
+  $('#m3').textContent=l?fa(Math.max(...hist.map(h=>h.overall)))+'٪':'—';
+  $('#mcd').dataset.c=sess.c;$('#mcd').innerHTML=cdHTML(sess.c,false);
+}
+
+/* پنل مدیر: فقط آمار تجمیعی و درخواست‌های ثبت‌نام */
+async function renderAdmin(){
+  try{
+    const [usersSnap,resultsSnap]=await Promise.all([getDocs(collection(db,'users')),getDocs(collection(db,'results'))]);
+    const users=usersSnap.docs.map(d=>({id:d.id,...d.data()}));
+    const pending=users.filter(u=>u.status==='pending');
+    const approved=users.filter(u=>u.status==='approved');
+    const results=resultsSnap.docs.map(d=>d.data());
+    const avg=results.length?results.reduce((a,r)=>a+(Number(r.overall)||0),0)/results.length:null;
+    const byClass={};approved.forEach(u=>byClass[u.class]=(byClass[u.class]||0)+1);
+    const C=(t,v)=>`<div class="card" style="margin:0"><div class="note">${t}</div><div class="big">${v}</div></div>`;
+    $('#astat').innerHTML=C('دانش‌آموز تأییدشده',fa(approved.length,0))+C('در انتظار تأیید',fa(pending.length,0))+C('آزمون ثبت‌شده',fa(results.length,0))+C('میانگین درصد کل',avg==null?'—':fa(avg)+'٪');
+    $('#acls').textContent='تعداد دانش‌آموزان هر کلاس: '+Object.keys(CL).map(c=>c+' '+fa(byClass[c]||0,0)).join(' | ');
+    $('#pend').innerHTML=pending.length?pending.map(v=>`<tr><td>${esc(v.name)}</td><td>${esc(v.class)}</td><td>${esc(v.username)}</td><td style="text-align:left"><button class="btn sm" data-id="${v.id}" data-a="approved">تأیید</button> <button class="btn bad sm" data-id="${v.id}" data-a="rejected">رد</button></td></tr>`).join(''):'<tr><td class="note">درخواستی در انتظار نیست.</td></tr>';
+    $$('#pend button').forEach(b=>b.onclick=async()=>{try{await updateDoc(doc(db,'users',b.dataset.id),{status:b.dataset.a,reviewedAt:serverTimestamp(),reviewedBy:sess.uid});await renderAdmin()}catch(e){alert(netErr(e))}});
+    drawA();
+  }catch(e){$('#astat').innerHTML='';$('#pend').innerHTML=`<tr><td class="note">${esc(netErr(e))}</td></tr>`;}
+}
+
+opts($('#rc'),Object.keys(CL));
+gate();
+</script>
+</body>
+</html>
